@@ -1,0 +1,66 @@
+#!/bin/bash
+
+exec 2>&1
+hash readlink 2>/dev/null && export READLINK=readlink
+hash greadlink 2>/dev/null && export READLINK=greadlink
+
+#-------------------------------------------------------------------------------
+# Walk up the directory hierarchy until REPOSITORY_DIR is the directory that
+# contains the .git repository directory.
+#-------------------------------------------------------------------------------
+REPOSITORY_DIR=`pwd`
+DONE=false
+while [[ "$REPOSITORY_DIR" != "/" && "$DONE" == "false" ]]; do
+    if [[ -d "$REPOSITORY_DIR/.git" ]]; then
+        DONE=true
+    else
+        REPOSITORY_DIR=$REPOSITORY_DIR/..
+        REPOSITORY_DIR=$($(READLINK) -f $REPOSITORY_DIR)
+    fi
+done
+
+#-------------------------------------------------------------------------------
+# Lint the code
+#-------------------------------------------------------------------------------
+mkdir -p $REPOSITORY_DIR/.build
+
+echo "Step 1: Linting APIs..."
+echo "======================="
+apic validate $REPOSITORY_DIR/apis/* > $REPOSITORY_DIR/.build/commit.log
+# fileSize=$(wc -c "/etc/passwd" | awk '{print $1}')
+if [[ $? != 0 ]]; then
+    echo "Linting APIs failed"
+    cat $REPOSITORY_DIR/.build/commit.log
+    exit 1
+fi
+echo "No errors in linted APIs"
+
+#-------------------------------------------------------------------------------
+# Stage/Publish APIs
+#-------------------------------------------------------------------------------
+echo ""
+echo ""
+echo "Step 2: Testing APIs"
+echo "===================="
+index=1
+for entry in $REPOSITORY_DIR/apis/*
+do
+  echo ""
+  echo "Testing API $entry"
+  $REPOSITORY_DIR/scripts/publish.sh $entry
+  ((index=index+1))
+done
+
+echo ""
+echo ""
+
+#-------------------------------------------------------------------------------
+# Clean up and spit out the line count
+#-------------------------------------------------------------------------------
+echo ""
+echo ""
+echo "Step 3: Cleanup"
+echo "===================="
+
+rm -f $REPOSITORY_DIR/.build/commit.log
+echo ""

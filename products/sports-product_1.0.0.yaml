@@ -1,0 +1,27 @@
+product: '1.0.0'
+
+info:
+    name: 'Sports'
+    title: 'The sports product'
+    version: '1.0.0'
+    summary: 'This is sports product summary'
+
+gateways:
+    - datapower-api-gateway
+
+visibility:
+    view:
+        enabled: true
+        type: 'public'
+    subscribe:
+        enabled: true
+        type: 'authenticated'
+
+apis:
+    routes:
+        name: sports-api:1.0.0
+
+plans:
+    bronze:
+        title: 'Bronze'
+        description: 'Bronze Plan'
