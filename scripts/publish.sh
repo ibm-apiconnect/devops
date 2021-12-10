@@ -1,7 +1,10 @@
 #!/bin/bash
 
 # Source default environment variables
-export BASE=/Users/sumanto/apic-devops # FIXME
+
+# Export $BASE as where root of this repo is checked out
+# export BASE=/Users/sumanto/apic-devops # FIXME
+
 . $BASE/scripts/.env
 
 # Environment variables specific to this script
