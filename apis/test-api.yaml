@@ -1,0 +1,201 @@
+swagger: '2.0'
+
+info:
+  x-ibm-name: test-api
+  title: Test API
+  version: 1.0.0
+
+schemes:
+    - https
+host: $(catalog.host)
+basePath: /api
+
+consumes:
+  - application/json
+produces:
+  - application/json
+
+securityDefinitions:
+ clientIdHeader:
+   type: apiKey
+   in: header
+   name: X-IBM-Client-Id
+
+security:
+ -
+   clientIdHeader: []
+
+x-ibm-configuration:
+  phase: realized
+  testable: true
+  enforced: true
+  gateway: datapower-api-gateway
+  cors:
+    enabled: true
+  properties:
+    runtime-url:
+      value: <Default value>
+      description: runtime url description
+      encoded: false
+  catalogs:
+    apic-dev:
+      properties:
+        runtime-url: $(TARGET_URL)
+    sb:
+      properties:
+        runtime-url: 'http://localhost:4001'
+  assembly:
+    execute:
+      - invoke:
+          version: '2.0.0'
+          target-url: https://httpbin.org/get
+paths:
+
+  /users:
+
+    post:
+      summary: Create a user
+      description: Create a new user
+      operationId: userCreate
+      externalDocs:
+        description: Blah
+        url: http://host/docs-about-routes-post
+      tags:
+        - Users
+      responses:
+        '201':
+          description: 'Success'
+          schema:
+            $ref: '#/definitions/User'
+        default:
+          description: 'Unexpected error'
+          schema:
+            $ref: '#/definitions/Error'
+
+    get:
+      summary: User list
+      description: Get a list of users
+      operationId: userList
+      externalDocs:
+        description: Blah
+        url: http://host/docs-about-routes-post
+      tags:
+        - Users
+      responses:
+        '200':
+          description: 'Success'
+          schema:
+            $ref: '#/definitions/UserList'
+        default:
+          description: 'Unexpected error'
+          schema:
+            $ref: '#/definitions/Error'
+
+  /users/{user}:
+
+    get:
+      summary: Retrieve the User
+      description: Retrieve the User
+      operationId: userGet
+      tags:
+        - Users
+      parameters:
+        - name: user
+          in: path
+          description: User id or name
+          required: true
+          type: string
+      responses:
+        '200':
+          description: 'Success'
+          schema:
+            $ref: '#/definitions/User'
+        default:
+          description: 'Unexpected error'
+          schema:
+            $ref: '#/definitions/Error'
+
+    patch:
+      summary: Update User
+      description: Update User
+      operationId: userUpdate
+      tags:
+        - Users
+      parameters:
+        - name: user
+          in: path
+          description: User id or name
+          required: true
+          type: string
+        - name: payload
+          in: body
+          description: User to update
+          required: true
+          schema:
+            $ref: '#/definitions/UserUpdate'
+      responses:
+        '200':
+          description: 'Success'
+          schema:
+            $ref: '#/definitions/User'
+        default:
+          description: 'Unexpected error'
+          schema:
+            $ref: '#/definitions/Error'
+
+    delete:
+      summary: Delete the User
+      description: Delete the User
+      operationId: userDelete
+      tags:
+        - Users
+      parameters:
+        - name: user
+          in: path
+          description: User id or name
+          required: true
+          type: string
+      responses:
+        '204':
+          description: 'Successful delete'
+        default:
+          description: 'Unexpected error'
+          schema:
+            $ref: '#/definitions/Error'
+
+definitions:
+
+  User:
+    type: object
+    additionalProperties: false
+
+  UserUpdate:
+    type: object
+    additionalProperties: false
+
+  UserList:
+    type: object
+    additionalProperties: false
+
+  Error:
+    type: object
+    additionalProperties: false
+    properties:
+      status:
+        type: integer
+      message:
+        type:
+          - string
+          - array
+
+tags:
+  - name: Users
+    description: Tags on all the user operations
+    externalDocs:
+      description: External information about Users
+      url: http://host/url-of-my-entire-set-of-tag-docs-for-this-tag
+  - name: Routes
+    description: Tags on all the route operations
+    externalDocs:
+      description: External information about Routes
+      url: http://host/url-of-my-entire-set-of-tag-docs-for-this-tag
