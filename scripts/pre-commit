@@ -11,13 +11,16 @@ hash greadlink 2>/dev/null && export READLINK=greadlink
 REPOSITORY_DIR=`pwd`
 DONE=false
 while [[ "$REPOSITORY_DIR" != "/" && "$DONE" == "false" ]]; do
-    if [[ -d "$REPOSITORY_DIR/.git" ]]; then
+    if [ -d "$REPOSITORY_DIR/.git" ]
+    then
         DONE=true
     else
         REPOSITORY_DIR=$REPOSITORY_DIR/..
-        REPOSITORY_DIR=$($(READLINK) -f $REPOSITORY_DIR)
+        REPOSITORY_DIR=`$READLINK -f $REPOSITORY_DIR`
     fi
 done
+
+export BASE=$REPOSITORY_DIR
 
 #-------------------------------------------------------------------------------
 # Lint the code
@@ -26,7 +29,9 @@ mkdir -p $REPOSITORY_DIR/.build
 
 echo "Step 1: Linting APIs..."
 echo "======================="
+set -x
 apic validate $REPOSITORY_DIR/apis/* > $REPOSITORY_DIR/.build/commit.log
+set +x
 # fileSize=$(wc -c "/etc/passwd" | awk '{print $1}')
 if [[ $? != 0 ]]; then
     echo "Linting APIs failed"
@@ -64,3 +69,4 @@ echo "===================="
 
 rm -f $REPOSITORY_DIR/.build/commit.log
 echo ""
+

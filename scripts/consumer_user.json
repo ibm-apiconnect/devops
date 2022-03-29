@@ -1,8 +1,8 @@
 {
-    "identity_provider": "sandbox-idp",
-    "username": "automated-test-user",
-    "password": "7iron-hide",
-    "email": "automated-test-user@apic.com",
-    "first_name": "Automated Test",
-    "last_name": "User"
+  "identity_provider": "demo-idp",
+  "username": "automated-test-user",
+  "password": "7iron-hide",
+  "email": "automated-test-user@apic.com",
+  "first_name": "Automated Test",
+  "last_name": "User"
 }
